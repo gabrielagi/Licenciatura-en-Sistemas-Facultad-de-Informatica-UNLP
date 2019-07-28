@@ -1,0 +1,163 @@
+programa parcial 
+procesos 
+  proceso juntarF(E X : numero ;E Y : numero ; ES id : numero) 
+  variables 
+    i,av,ca : numero 
+  comenzar 
+    i := 0 
+    av := PosAv 
+    ca := PosCa 
+    repetir X 
+      repetir Y 
+        mientras HayFlorEnLaEsquina 
+          tomarFlor 
+          EnviarMensaje(id,coordinadorf) 
+          EnviarMensaje(1,coordinadorf) 
+        mover 
+      av := av + 1 
+      Pos(av,ca) 
+  fin 
+  proceso juntarP(E X: numero ;E Y : numero ; ES id : numero) 
+  variables 
+    i,av,ca : numero 
+  comenzar 
+    i := 0 
+    av := PosAv 
+    ca := PosCa 
+    repetir X 
+      repetir Y 
+        mientras HayPapelEnLaEsquina 
+          tomarPapel 
+          EnviarMensaje(id,coordinadorp) 
+          EnviarMensaje(1,coordinadorp) 
+        mover 
+      av := av + 1 
+      Pos(av,ca) 
+  fin 
+ 
+areas 
+  flores1 : AreaP(20,20,35,25) 
+  flores2 : AreaP(38,20,53,25) 
+  papeles1 : AreaP(20,30,25,45)   
+  papeles2 : AreaP(38,30,43,45) 
+  coordinadores : AreaPC (14,14,15,15) 
+  deposito : AreaPC (69,69,71,71) 
+  inicio : AreaPC (1,1,100,100) 
+robots 
+  robot papelero 
+  variables 
+    av,ca,id,cantidad : numero 
+  comenzar 
+    RecibirMensaje(id,coordinadorp) 
+    si ( id = 1) 
+      Pos(20,30) 
+    sino 
+      Pos(38,30) 
+    av := PosAv 
+    ca := PosCa 
+    juntarP(5,15,id) 
+    EnviarMensaje(id,coordinadorp) 
+    EnviarMensaje(0,coordinadorp) 
+    RecibirMensaje(cantidad,coordinadorp) 
+    repetir cantidad  
+      BloquearEsquina(70,70) 
+      Pos(70,70) 
+      depositarPapel 
+      Pos(av,ca) 
+      LiberarEsquina(70,70) 
+  fin 
+  robot florerero 
+  variables 
+    av,ca,id,cantidad : numero 
+  comenzar 
+    RecibirMensaje(id,coordinadorf) 
+    si ( id = 1) 
+      Pos(20,20) 
+    sino 
+      Pos(38,20) 
+    av := PosAv 
+    ca := PosCa 
+    juntarF(15,5,id) 
+    EnviarMensaje(id,coordinadorf) 
+    EnviarMensaje(0,coordinadorf) 
+    RecibirMensaje(cantidad,coordinadorf) 
+    repetir cantidad  
+      BloquearEsquina(70,70) 
+      Pos(70,70) 
+      depositarFlor
+      Pos(av,ca) 
+      LiberarEsquina(70,70) 
+  fin 
+  robot coordinadorf 
+  variables 
+    cont1,cont2,id,noTermino1,noTermino2 : numero 
+  comenzar 
+    EnviarMensaje(1,florerero1) 
+    EnviarMensaje(2,florerero2) 
+    noTermino1 := 1 
+    noTermino2 := 1 
+    cont1 := 0 
+    cont2 := 0 
+    mientras (noTermino1 = 1) | (  noTermino2 = 1 ) 
+      RecibirMensaje(id,*) 
+      si (id = 1) 
+        RecibirMensaje(noTermino1,florerero1) 
+        si (noTermino1 = 1) 
+          cont1 := cont1 + 1 
+      sino
+        RecibirMensaje(noTermino2,florerero2) 
+        si (noTermino2 = 1) 
+          cont2 := cont2 + 1 
+    si (cont1 > cont2) 
+      EnviarMensaje(cont1,florerero1) 
+      EnviarMensaje(0,florerero2)
+    sino 
+      EnviarMensaje(cont2,florerero2)
+      EnviarMensaje(0,florerero1) 
+  fin     
+  robot coordinadorp 
+  variables 
+    cont1,cont2,id,noTermino1,noTermino2 : numero 
+  comenzar 
+    EnviarMensaje(1,papelero1) 
+    EnviarMensaje(2,papelero2) 
+    noTermino1 := 1 
+    noTermino2 := 1 
+    cont1 := 0 
+    cont2 := 0 
+    mientras (noTermino1 = 1) |( noTermino2 = 1) 
+      RecibirMensaje(id,*) 
+      si (id = 1) 
+        RecibirMensaje(noTermino1,papelero1) 
+        si (noTermino1 = 1) 
+          cont1 := cont1 + 1 
+      sino
+        RecibirMensaje(noTermino2,papelero2) 
+        si (noTermino2 = 1) 
+          cont2 := cont2 + 1 
+    si (cont1 > cont2) 
+      EnviarMensaje(cont1, papelero1) 
+      EnviarMensaje(0, papelero2)
+    sino 
+      EnviarMensaje(cont2,papelero2)
+      EnviarMensaje(0, papelero1)    
+  fin 
+variables 
+  florerero1 , florerero2 : florerero 
+  papelero1,papelero2 : papelero 
+  coordinadorp : coordinadorp 
+  coordinadorf : coordinadorf 
+comenzar 
+  AsignarArea(florerero1,inicio) 
+  AsignarArea(florerero2,inicio) 
+  AsignarArea(papelero1, inicio) 
+  AsignarArea(papelero2, inicio) 
+  AsignarArea(coordinadorp, coordinadores) 
+  AsignarArea(coordinadorf, coordinadores) 
+  Iniciar(florerero1,10,10) 
+  Iniciar(florerero2,11,11) 
+  Iniciar(papelero1,12,12) 
+  Iniciar(papelero2,13,13) 
+  Iniciar(coordinadorp,15,15) 
+  Iniciar(coordinadorf,14,14) 
+fin
